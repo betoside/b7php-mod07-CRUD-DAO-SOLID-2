@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Módulo 7: Banco de Dados, CRUD, DAO, SOLID</title>
+</head>
+<body>
+    
+    <h1>Módulo 7: Banco de Dados, CRUD, DAO, SOLID</h1>
+    <p>30 aulas</p>
+    <p>/Applications/MAMP/htdocs/b7-review-php/mod07-CRUD-DAO-SOLID-2/14-DAO/table-contents.html</p>
+    <p>Trello: https://trello.com/c/Nc4dh0Nk/14-php</p>
+
+<pre>
+
+<hr>
+<strong>#1: Introdução à Banco de dados</strong>
+
+<hr>
+<strong>#2: Visão geral do PHPMyAdmin (1/3)</strong>
+
+<hr>
+<strong>#3: Visão geral do PHPMyAdmin (2/3)</strong>
+
+<hr>
+<strong>#4: Visão geral do PHPMyAdmin (3/3)</strong>
+
+<hr>
+<strong>#5: Conectando ao Banco de Dados com PDO</strong>
+
+    PHP Data Objects
+
+<hr>
+<strong>#6: Conceito CRUD</strong>
+
+<hr>
+<strong>#7: Create: Inserindo dados com PDO (1/2)</strong>
+
+<hr>
+<strong>#8: Create: Inserindo dados com PDO (2/2)</strong>
+
+<hr>
+<strong>#9: Read: Lendo dados com PDO</strong>
+
+<hr>
+<strong>#10: Update: Atualizando dados com PDO (1/2)</strong>
+
+<hr>
+<strong>#11: Update: Atualizando dados com PDO (2/2)</strong>
+
+<hr>
+<strong>#12: Delete: Removendo dados com PDO</strong>
+
+<hr>
+<strong>#13: Observação sobre o CRUD anterior</strong>
+
+<hr>
+<strong>#14: Conceito Data Access Object (DAO)</strong>
+
+    DATA ACCESS OBJETC
+
+    é um conceito
+
+    Na pratica temos pelo menos 2 classes funcionando
+
+    1 classe temos o próprio item: Usuario.
+
+    1 outra temos o UsuarioDAO (vai intermediar entre o BD e a classe Usuario)
+
+        manipulacao de db
+        inserção / add(Usuario)
+            sempre ao manusear nome, email etc relacionado ao user
+            tem que usar a class Usuario
+
+            - cria a class do new User
+            $user = new User();
+            $user->setNome('fulano');
+            $user->setEmail('fulano@fulano.com');
+
+            $userDAO->add($user);
+        
+        update
+        delete
+        pegar todos os users
+
+
+    Por quê complicar desse jeito?
+    
+    1º responsabilidade de manipulaÇÃo de dados do Usuario fica
+    concentrado na classe específica dele.
+
+    2º pode fazer uma classe de UsuarioDAO para especifica para um 
+    banco de dados específico, para outro, ou um terceiro ainda
+    manatendo a implementacação exatamente a mesma, atualizando apenas 
+    dentro do método que vai manipular os dados.
+
+    ou seja, com poucas linhas vc pode todo o sistema de antes usar mysql 
+    e passar a usar Oracle ou SqlServer
+
+    Ou ainda, criar uma nova classe de implementação e usar uma
+    INTERFACE para padronizar essa implementação.
+
+    O DAO realmente é muito teórico.
+
+
+    RESUMO CONCEITO:
+
+    - quero adicionar 1 usar
+    -- crio o objeto do usuario a ser adicionado
+    - mando o objeto para o intermediario
+    - o intermediario faz a comunicação com o banco de dados
+
+    dessa forma eu separo a comunicação com o banco de dados
+    da aplicação como um todo. dessa forma facilito muito
+    a manutenção.
+
+
+<hr>
+<strong>#15: Criando um DAO na prática (1/5)</strong>
+
+    utilizar inclusive injeção de dependência
+
+<hr>
+<strong>#16: Criando um DAO na prática (2/5)</strong>
+
+<hr>
+<strong>#17: Criando um DAO na prática (3/5)</strong>
+
+<hr>
+<strong>#18: Criando um DAO na prática (4/5)</strong>
+
+<hr>
+<strong>#19: Criando um DAO na prática (5/5)</strong>
+
+<hr>
+<strong>#20: Conceito SOLID</strong>
+
+<hr>
+<strong>#21: SOLID: S - Princípio da Responsabilidade Única</strong>
+
+Uma Class deve ter uma responsabilidade.
+Ela não deve ter multiplas responsabilidades.
+
+DE:
+--- 
+
+class Usuario {
+
+    public function setNome() {}
+    public function getNome() {}
+
+    public function add() {}
+    public function update() {}
+    public function delete() {}
+
+}
+
+- problema de coesão, qual seria o motivo/princípio da class
+- auto acoplamento. há situações que não precisam trazer 
+todas as informações de banco de dados mas acaba puxando tudo,
+a classe toma tamanho/(des)organização
+
+
+
+PARA:
+---
+
+class Usuario { 
+    
+    // objeto do próprio usuario
+    // para fazer uso do usuario
+
+    public function setNome() {}
+    public function getNome() {}
+
+}
+
+
+class UsuarioDAO { 
+    
+    // essa cara é responsável pela manipulação dos dados
+    // responsabilidades de banco de dados
+    // injeção de dependência basicamente
+
+    public function add(Usuario $u) {}
+    public function update(Usuario $u) {}
+    public function delete($id) {}
+
+}
+
+
+<hr>
+<strong>#22: SOLID: O - Princípio Aberto-Fechado</strong>
+
+Aberto para extensão
+Fechado para modificação
+
+---
+DE:
+---
+class ContratoClt {
+    public function calcularSalario() {}
+}
+class Estagio {
+    public function bolsaAuxilio() {}
+}
+class ContratoPj {
+    public function calcularPagamento() {}
+}
+
+class FolhaPagamento() {
+    public function calcular( $funcionario ) {
+        $salario = 0;
+
+        if($funcionario instanceof ContratoClt) {
+            $salario = $funcionario->calcularSalario();
+        } elseif ($funcionario instanceof Estagio) {
+            $salario = $funcionario->bolsaAuxilio();
+        } elseif ($funcionario instanceof ContratoPj) {
+            $salario = $funcionario->calcularPagamento();
+        }
+
+        return $salario;
+    }
+}
+
+
+---
+PARA:
+---
+class Remuneravel {
+    public function remuneracao() {}
+}
+class ContratoClt implements Remuneravel {
+    public function remuneracao() {}
+}
+class Estagio implements Remuneravel {
+    public function remuneracao() {}
+}
+class ContratoPj implements Remuneravel {
+    public function remuneracao() {}
+}
+class ContratoInternacional implements Remuneravel {
+    public function remuneracao() {}
+}
+
+class FolhaPagamento() {
+    public function calcular( Remuneravel $funcionario ) {
+
+        return $funcionario->remuneravel();
+    }
+}
+
+
+OBS: claro, não tem como aplicar esse princípio em absolutamente
+tudo em nosso código mas onde for possível verificar a possibilidade
+de remodelar uma parte do código como no exemplo da aula
+
+usar INTERFACE para resolver esse tipo de problema
+
+<hr>
+<strong>#23: SOLID: L - Princípio da Substituição de Liskov</strong>
+
+Barbara Liskov, criadora, em 1900 e la vai cocada (87+-)
+
+Os métodos das classes que estão extendendo deveriam/devem ser 
+fidedígnos aos métodos originais
+
+class A{
+    public function getNome(){
+        return "Meu nome é A";
+    }
+}
+
+class B extends A{
+    public function getNome(){
+        return "Meu nome é B";
+    }
+}
+
+function imprimeNome(A $obj){
+    return $obj->getNome();
+}
+
+$objeto1 = new A();
+$objeto2 = new B();
+
+echo imprimeNome($objeto1)."&lt;br />";
+echo imprimeNome($objeto2)."&lt;br />";
+
+
+Exemplo de violão do método:
+--- 
+
+
+class B extends A{
+    public function getNome(){
+        return 30;
+    }
+}
+
+
+<hr>
+<strong>#24: SOLID: I - Princípio da Segregação da Interface</strong>
+
+<a href="https://medium.com/desenvolvendo-com-paixao/o-que-%C3%A9-solid-o-guia-completo-para-voc%C3%AA-entender-os-5-princ%C3%ADpios-da-poo-2b937b3fc530">
+    https://medium.com/desenvolvendo-com-paixao/o-que-%C3%A9-solid-o-guia-completo-para-voc%C3%AA-entender-os-5-princ%C3%ADpios-da-poo-2b937b3fc530
+    <br>
+    O que é SOLID: O guia completo para você entender os 5 princípios da POO
+</a>
+
+DE:
+---
+
+interface Aves
+{
+    public function setLocalizacao($longitude, $latitude);
+    public function setAltitude($altitude);
+    public function renderizar();
+}
+
+class Papagaio implements Aves
+{
+    public function setLocalizacao($longitude, $latitude) {}
+    public function setAltitude($altitude) {}
+    public function renderizar() {}
+}
+
+class Pinguim implements Aves
+{
+    public function setLocalizacao($longitude, $latitude) {}
+    
+    // A Interface Aves está forçando a Classe Pinguim a implementar esse método.
+    // Isso viola o príncipio ISP
+    public function setAltitude($altitude)
+    {
+        //Não faz nada...  Pinguins são aves que não voam!
+    }
+    
+    public function renderizar() {}
+}
+
+--- 
+PARA: 
+--- 
+
+interface Aves
+{
+    public function setLocalizacao($longitude, $latitude);
+    public function renderizar();
+}
+
+interface AvesQueVoam extends Aves
+{
+    public function setAltitude($altitude);
+}
+
+class Papagaio implements AvesQueVoam
+{
+    public function setLocalizacao($longitude, $latitude) {}
+    public function setAltitude($altitude) {}
+    public function renderizar() {}
+}
+
+class Pinguim implements Aves
+{
+    public function setLocalizacao($longitude, $latitude) {}
+    public function renderizar() {}
+}
+
+<hr>
+<strong>#25: SOLID: D - Princípio da Inversão da Dependência</strong>
+
+
+interface DBConnectionInterface{
+    public function connect();
+}
+class MySQLConnection implements DBConnectionInterface{
+    public function connect() {}
+}
+class OracleConnection implements DBConnectionInterface{
+    public function connect() {}
+}
+
+class UsuarioDAO{
+    private $dbConnection;
+
+    public function __construct(DBConnectionInterface $dbConnection) {
+        $this->dbConnection = $dbConnection;
+    }
+}
+
+
+<hr>
+<strong>#26: Encriptação de senhas</strong>
+
+password_hash(senha, PASSWORD_DEFAULT)
+password_verify(senha, hash)
+
+2 tipos mais utilizados hoje:
+- PASSWORD_DEFAULT // pode ir até 255 caracteres. é a recomendação do PHP
+- PASSWORD_BCRYPT  // 60 caracteres sempre
+
+$senha = '1234'; // senha literal
+
+salvar a senha encriptada
+vários caracteres representam a senha
+gerar um hash para a senha. password_hash($senha, PASSWORD_DEFAULT)
+
+Não tem como reverter o hash para a senha 
+mas tem como verificar
+
+outras opções:
+
+- md5()
+vulnerabilidade: é possível, quase nula a possibilidade, existir o mesmo hash 
+para duas senhas diferentes
+
+$senha = '1234'
+$senha = '7894'
+$hash = md5($senha)
+echo $hash
+
+</pre>
+
+</body>
+</html>
